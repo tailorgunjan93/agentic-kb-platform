@@ -24,7 +24,47 @@ Frontend (Gradio/React) ↓ API Layer (FastAPI / .NET Core) ↓ ├── Non-Ag
 ---
 
 ## 🗂️ Folder Structure
-agentic-kb-platform/ ├── backend/         # Auth, KB, File, Vector services ├── agents/          # Agent registry, workflows, tools ├── api/             # FastAPI entry point and routes ├── database/        # Schema, migrations, ORM models ├── frontend/        # Gradio UI and future React UI ├── docker/          # Dockerfiles and Compose setup ├── scripts/         # Seeders, test runners, utilities ├── tests/           # Unit and integration tests └── .env/            # Environment config
+agentic-kb-platform/
+│
+├── infra/                         # Infrastructure configs
+│   ├── docker/                    # Dockerfiles and Compose
+│   └── env/                       # .env files for dev, prod
+│
+├── database/                      # 💾 DB-first layer
+│   ├── sql/                       # Raw SQL scripts
+│   │   ├── schema.sql             # Full schema (DDL)
+│   │   ├── seed.sql               # Initial seed data
+│   │   ├── teardown.sql           # Drop/reset script
+│   │   └── functions.sql          # Stored procedures, triggers
+│   ├── migrations/                # Versioned migrations
+│   │   ├── V001_init.sql
+│   │   ├── V002_add_chat_table.sql
+│   │   └── README.md              # Migration instructions
+│   ├── models/                    # ORM models (SQLAlchemy / EF Core)
+│   │   ├── user.py
+│   │   ├── file.py
+│   │   └── ...
+│   └── alembic/                   # Alembic config (if using SQLAlchemy)
+│       ├── versions/
+│       └── env.py
+│
+├── backend/                       # Non-agentic services
+│
+├── agents/                        # Agentic workflows
+│
+├── api/                           # FastAPI or .NET API layer
+│
+├── frontend/                      # Gradio / React UI
+│
+├── scripts/                       # Dev scripts
+│   ├── init_db.py                 # Run schema + seed
+│   ├── migrate_db.py              # Apply migrations
+│   └── backup_db.py               # Dump DB for recovery
+│
+├── tests/                         # Unit and integration tests
+│
+├── README.md
+└── requirements.txt / .csproj
 
 
 ---
