@@ -1,5 +1,5 @@
 import os
-from db.query import insert_file
+from db.async_query import insert_file
 import db.query
 from config import setup_logger
 logger = setup_logger()
@@ -11,12 +11,12 @@ def resolve_path(file_path: str, file_name: str) -> str:
         raise FileNotFoundError(f"File not found: {full_path}")
     return full_path
 
-def insert_file_record(conn,filename: str, path: str) -> str:
+async def insert_file_record(conn,filename: str, path: str) -> str:
     """Insert a new file record and return its UUID."""
-    file_id = insert_file(conn,filename,path)
+    file_id =await insert_file(conn,filename,path)
     return file_id
 
-def insert_embeddings(conn,file_id: str, chunks: list[str], vectors: list):
+async def insert_embeddings(conn,file_id: str, chunks: list[str], vectors: list):
     """Insert chunked content and embeddings into DB."""
     logger.info("in utils file")
-    db.query.insert_embeddings(conn,file_id,chunks,vectors)
+    await db.async_query.insert_embeddings(conn,file_id,chunks,vectors)

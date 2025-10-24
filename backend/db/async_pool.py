@@ -1,7 +1,10 @@
 import asyncpg
 from config import DB_CONFIG
+from pgvector.asyncpg import register_vector  # add this
 
 db_pool = None
+async def _init_connection(conn):
+    await register_vector(conn)  # register codec on each connection
 
 async def init_pool():
     global db_pool
@@ -13,7 +16,8 @@ async def init_pool():
             password=DB_CONFIG["password"],
             database=DB_CONFIG["dbname"],
             min_size=1,
-            max_size=10
+            max_size=10,
+            init=_init_connection  # add this
         )
 
 async def get_conncetion():

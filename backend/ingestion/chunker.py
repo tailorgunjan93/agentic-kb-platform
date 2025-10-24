@@ -2,10 +2,10 @@ import fitz
 import docx
 import os
 
-def chunk_text(text,chunk_size=5000):
+def chunk_text(text,chunk_size=500):
     return [text[i:i+chunk_size] for i in range(0,len(text),chunk_size)]
 
-def chunk_pdf(file_path,chunk_size=5000):
+def chunk_pdf(file_path,chunk_size=500):
     """
     Extracts text from a PDF file and splits it into fixed-size chunks.
 
@@ -29,9 +29,9 @@ def chunk_doc(file_path,chunk_size=500):
 def chunk_txt(file_path,chunk_size=500):
     with open(file_path,'r',encoding="utf-8") as f:
         full_text = f.read()
-    return chunk_txt(full_text,chunk_size)
+    return chunk_text(full_text,chunk_size)
 
-def chunk_files(file_path,chunk_size=5000):
+def chunk_files(file_path,chunk_size=500):
     ext = os.path.splitext(file_path)[1].lower()
     if ext==".pdf":
        return chunk_pdf(file_path,chunk_size)
