@@ -1,10 +1,17 @@
 import asyncpg
 from config import DB_CONFIG
-from pgvector.asyncpg import register_vector  # add this
 
 db_pool = None
 async def _init_connection(conn):
-    await register_vector(conn)  # register codec on each connection
+    # Register vector type manually
+    await conn.execute('CREATE EXTENSION IF NOT EXISTS vector')
+    try:
+        from pgvector.asyncpg import register_vector
+        await register_vector(conn)
+    except Exception as e:
+        print(f"Warning: Could not register vector type: {e}")
+        # Fallback: just ensure connection works
+        await conn.execute("SELECT 1")
 
 async def init_pool():
     global db_pool

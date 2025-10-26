@@ -19,3 +19,11 @@ class IngestResponse(BaseModel):
 class SearchResult(BaseModel):
     query:str
     results:List[str]
+
+class ChunkResult(BaseModel):
+    chunk_text: str
+    score: float
+
+class SemanticSearchResult(BaseModel):
+    filename: str
+    chunks: List[ChunkResult]

@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from router.ingestion_router import router as ingestion_router
 from router.get_files_router import router as file_router
 from router.search_router import router as search_router
@@ -12,6 +13,15 @@ async def lifespan(app: FastAPI):
     if db_pool:
         await db_pool.close()
 app = FastAPI(lifespan=lifespan)
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost:3001"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 app.include_router(ingestion_router,prefix="/ingest",tags=["Ingestion"])

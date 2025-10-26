@@ -4,32 +4,35 @@ from datetime import datetime
 from uuid import uuid4
 import json
 
-async def semantic_search(query_vector:list[float])->list[FileRecords]:
+async def semantic_search(query_vector:list[float]):
      conn = await get_conncetion()
      try:
           rows = await conn.fetch("""
             SELECT 
-                f.id,
                 f.filename,
-                f.path,
-                f.uploaded_at,
-                MIN(e.embedding <=> $1) AS distance
+                e.content AS chunk_text,
+                (1 - (e.embedding <=> $1)) AS score
             FROM files f
             JOIN embeddings e ON f.id = e.file_id
-            GROUP BY f.id, f.filename, f.path, f.uploaded_at
-            ORDER BY distance ASC
-            LIMIT 3
+            ORDER BY e.embedding <=> $1 ASC
+            LIMIT 10
         """, query_vector)
 
+          # Group by filename
+          results = {}
+          for row in rows:
+              filename = row["filename"]
+              if filename not in results:
+                  results[filename] = []
+              results[filename].append({
+                  "chunk_text": row["chunk_text"],
+                  "score": float(row["score"])
+              })
+          
           return [
-            FileRecords(
-                id=row["id"],
-                filename=row["filename"],
-                path=row["path"],
-                uploaded_at=row["uploaded_at"]
-            )
-            for row in rows
-        ]
+              {"filename": filename, "chunks": chunks}
+              for filename, chunks in results.items()
+          ]
      except Exception as e:
          raise Exception(e)
      finally:

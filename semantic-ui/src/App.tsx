@@ -1,24 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import SearchBar from "./components/SearchBar";
+import ResultCard from "./components/ResultCard";
+import { searchSemantic } from "./services/searchService";
+import { SemanticResult } from "./types";
 
 function App() {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SemanticResult[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const handleSearch = async () => {
+    setLoading(true);
+    try {
+      const data = await searchSemantic(query);
+      setResults(data);
+    } catch (err) {
+      console.error("Search failed", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="p-6 max-w-3xl mx-auto">
+      <SearchBar query={query} onChange={setQuery} onSearch={handleSearch} loading={loading} />
+      {results.map((res, idx) => (
+        <ResultCard key={idx} result={res} />
+      ))}
     </div>
   );
 }
