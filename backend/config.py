@@ -1,15 +1,11 @@
 import logging
 from dotenv import load_dotenv
 import os
+from pathlib import Path
 
-load_dotenv()
-# DB_CONFIG = {
-#     'dbname': "agentic_kb",
-#     'user': "postgres",
-#     'password': "Gun@123!",
-#     'host': "localhost",
-#     'port': 5432
-# }
+# Load .env from project root (one level up from backend)
+env_path = Path(__file__).parent.parent / ".env"
+load_dotenv(dotenv_path=env_path)
 
 DB_CONFIG = {
     "host": os.getenv("DB_HOST"),
