@@ -21,6 +21,7 @@ async def search(query:str=Query(...)):
         logger.error(f"semantic search error {e}") 
         raise HTTPException(status_code=500,detail=str(e))
 
+
     
     
     
