@@ -1,6 +1,12 @@
 import asyncpg
 from config import DB_CONFIG
+from urllib.parse import quote_plus
 
+password = quote_plus(DB_CONFIG["password"])
+DATABASE_URL = (
+    f"postgresql://{DB_CONFIG['user']}:{password}"
+    f"@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['dbname']}"
+)
 db_pool = None
 async def _init_connection(conn):
     # Register vector type manually
@@ -17,11 +23,7 @@ async def init_pool():
     global db_pool
     if db_pool is None:
         db_pool = await asyncpg.create_pool(
-            host=DB_CONFIG["host"],
-            port=DB_CONFIG["port"],
-            user=DB_CONFIG["user"],
-            password=DB_CONFIG["password"],
-            database=DB_CONFIG["dbname"],
+            dsn=DATABASE_URL,
             min_size=1,
             max_size=10,
             init=_init_connection  # add this
@@ -36,5 +38,5 @@ async def get_conncetion():
 async def release_conncetion(conn):
     global db_pool
     if db_pool:
-        db_pool.release(conn)
+        await db_pool.release(conn)
     

@@ -7,7 +7,7 @@ from urllib.parse import quote_plus
 
 # Load .env from project root (two levels up from this file)
 env_path = Path(__file__).parent.parent.parent / ".env"
-load_dotenv(dotenv_path=env_path)
+load_dotenv(override=True)
 
 # URL-encode password to handle special characters like @ and !
 password = quote_plus(os.getenv('DB_PASSWORD'))

@@ -1,7 +1,52 @@
+version: '3.8'
 
 services:
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    pull_policy: never  # Optional: prevents re-pull
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: langgraph-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - ./.env:/app/.env  # Mount .env directly
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  # test-runner:
+  #   build:
+  #     context: ./backend/tests
+  #     dockerfile: Dockerfile.test
+  #   container_name: langgraph-tests
+  #   depends_on:
+  #     redis:
+  #       condition: service_healthy
+  #   environment:
+  #     - REDIS_HOST=redis
+  #   volumes:
+  #     - ./backend:/app
+  #   command: pytest tests/test_nodes.py -v
+
   db:
     image: pgvector/pgvector:pg16
+    #container_name: postgres-db
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=Gun@123!
@@ -16,35 +61,6 @@ services:
       timeout: 5s
       retries: 5
 
-  backend:
-    build: ./backend
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./backend:/app
-    environment:
-      - PYTHONUNBUFFERED=1
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=Gun@123!
-      - DB_NAME=agentic_kb
-    depends_on:
-      db:
-        condition: service_healthy
-
-  frontend:
-    build: ./semantic-ui
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./semantic-ui:/app
-      - /app/node_modules
-    environment:
-      - BROWSER=none
-      - CHOKIDAR_USEPOLLING=true
-    depends_on:
-      - backend
-
 volumes:
   postgres_data:
+

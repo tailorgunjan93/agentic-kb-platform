@@ -1,12 +1,36 @@
+# --- Web framework ---
 fastapi
-uvicorn
-pgvector
+uvicorn[standard]
+
+# --- Database drivers & ORM ---
 psycopg2-binary
+asyncpg
 sqlalchemy
-openai
+pgvector
+
+# --- Cache / Message broker ---
+redis
+
+# --- LangChain ecosystem ---
+langchain
+langchain-google-genai
+langchain-core
+langchain-community
 langgraph
-python-dotenv
+
+# --- Vector search ---
+faiss-cpu
+
+# --- ML / Embeddings ---
+huggingface-hub
+transformers
+sentence-transformers
+
+# --- Document parsing ---
 pymupdf
 python-docx
-sentence_transformers
-asyncpg
+
+# --- Utilities ---
+python-dotenv
+pydantic
+openai

@@ -3,15 +3,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from router.ingestion_router import router as ingestion_router
 from router.get_files_router import router as file_router
 from router.search_router import router as search_router
+from router.getting_summary import router as summary_router
 from db.async_pool import init_pool,db_pool
 from contextlib import asynccontextmanager
 import asyncio
 from vectorstore.index import build_faiss_index
 from api.test import router as test_router
 from router.faiss_search import router as faiss_search_router
-
-
-
+from aagentic.langgraph.build_graph import build_graph
+import asyncio
 
 
 @asynccontextmanager
@@ -37,6 +37,7 @@ app.include_router(file_router,prefix="/files",tags=["File Registry"])
 app.include_router(search_router,prefix="/search",tags=["Semantic search"])
 app.include_router(test_router,prefix="/api",tags=["Test"])
 app.include_router(faiss_search_router,prefix="/faiss",tags=["FAISS search"])
+app.include_router(summary_router,prefix="/summary",tags=["summary"])
 
 @app.on_event("startup")
 async def startup_event():
@@ -53,3 +54,4 @@ async def build_faiss_index_on_startup():
         print(f"❌ Error building FAISS index on startup: {e}")
         import traceback
         traceback.print_exc()
+
